@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+<title>Assignment 4 - Windmill</title>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+
+attribute vec4 vPosition;
+attribute vec4 vNormal;
+
+varying vec4 color;
+uniform vec4 vColor;
+
+uniform vec4 ambientProduct, diffuseProduct, specularProduct;
+uniform float shininess;
+
+uniform mat4 modelView;
+uniform mat4 projection;
+uniform vec4 lightPosition;
+uniform mat3 normalMatrix;
+uniform mat4 transformationMatrix;
+
+void
+main()
+{
+	vec3 pos = (modelView * vPosition).xyz;
+    vec3 light = lightPosition.xyz;
+    vec3 L;
+    
+    if(lightPosition.w == 0.0) L = normalize(lightPosition.xyz);
+    else L = normalize( lightPosition.xyz - pos );
+
+    vec3 E = -normalize( pos );
+    vec3 H = normalize( L + E );
+
+    vec3 N = normalize( normalMatrix * vNormal.xyz);
+	
+	float Ks = pow( max(dot(N, H), 0.0), shininess );
+    vec4  specular = Ks * specularProduct;
+	
+	if( dot(L, N) < 0.0 ) {
+	specular = vec4(0.0, 0.0, 0.0, 1.0);
+    } 
+	
+	float Kd = max( dot(L, N), 0.0 );
+    vec4  diffuse = Kd * diffuseProduct * vColor;
+	
+    vec4 ambient = ambientProduct * vColor; 
+    
+
+    gl_Position = projection * modelView * transformationMatrix * vec4(vPosition.xyz, 2.5);
+    
+    color =  specular + diffuse + ambient;
+
+    color.a = 1.0;
+}
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+
+precision mediump float;
+
+varying vec4 color;
+
+void
+main()
+{
+    gl_FragColor = color;
+}
+</script>
+
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="Assignment4.js"></script>
+</head>
+
+<body style="background-color:powderblue;">
+
+<div>
+Feyza 
+</div>
+<table>
+	<tr>
+		<td>
+		<canvas id="gl-canvas" width="650" height="650">
+			Oops ... your browser doesn't support the HTML5 canvas element
+		</canvas>
+		</td>
+		<td>
+			<div><strong>Light Position</strong></div> 
+			<div>X: -20<input id="inp_objLightX" type="range"
+			 min="-20" max="20" step="1.0" value="0" />20</div> 
+			 <div>Y: -20<input id="inp_objLightY" type="range"
+			 min="-20" max="20" step="1.0" value="0" />20</div> 
+			 <div>Z: -20<input id="inp_objLightZ" type="range"
+			 min="-20" max="20" step="1.0" value="0" />20</div> 
+			
+			<div><strong>Specular:</strong></div> 
+			<div>R: 0<input id="spec_R" type="range"
+			 min="0" max="1" step="0.01" value="0" />1
+			</div> 
+			<div>G: 0<input id="spec_G" type="range"
+			 min="0" max="1" step="0.01" value="0" />1
+			</div> 
+			<div>B: 0<input id="spec_B" type="range"
+			 min="0" max="1" step="0.01" value="0" />1
+			</div> 
+			<div><strong>Diffuse:</strong></div> 
+			<div>R: 0<input id="diff_R" type="range"
+			 min="0" max="1" step="0.01" value="0" />1
+			</div> 
+			<div>G: 0<input id="diff_G" type="range"
+			 min="0" max="1" step="0.01" value="0" />1
+			</div> 
+			<div>B: 0<input id="diff_B" type="range"
+			 min="0" max="1" step="0.01" value="0" />1
+			</div> 
+			<div><strong>Ambient:</strong></div> 
+			<div>R: 0<input id="ambient_R" type="range"
+			 min="0" max="1" step="0.01" value="0" />1
+			</div> 
+			<div>G: 0<input id="ambient_G" type="range"
+			 min="0" max="1" step="0.01" value="0" />1
+			</div> 
+			<div>B: 0<input id="ambient_B" type="range"
+			 min="0" max="1" step="0.01" value="0" />1
+			</div> 
+			<div><strong>Shineness:</strong></div> 
+			<div> 0<input id="inp_shineness" type="range"
+			 min="0" max="40" step="2.0" value="20" />40
+			</div> 
+			<br>
+			
+			<div> <strong>---- Camera related ----</strong> </div>
+			
+			<div>FOVY: 30<input id="inp_fovy" type="range"
+			 min="10" max="120" step="0.05" value="30" />120</div> 
+			
+			<div>Camera Position</div> 
+			<div>X: -3<input id="inp_objCamPosX" type="range"
+			 min="-3" max="3" step="0.05" value="0" />3</div> 
+			<div>Y: -3<input id="inp_objCamPosY" type="range"
+			 min="-3" max="3" step="0.05" value="0" />3</div>
+			 <div>Z: 1<input id="inp_objCamPosZ" type="range"
+			 min="1" max="7" step="0.05" value="4" />7</div>
+			 
+			 <div>Camera Target</div> 
+			<div>X: -3<input id="inp_objTargetX" type="range"
+			 min="-3" max="3" step="0.05" value="0" />3</div> 
+			<div>Y: -3<input id="inp_objTargetY" type="range"
+			 min="-3" max="3" step="0.05" value="0" />3</div>
+			 <div>Z: -3<input id="inp_objTargetZ" type="range"
+			 min="-3" max="3" step="0.05" value="0" />3</div><br>
+			 
+			 
+			<div> <strong>---- Transformations ----</strong> </div>
+			
+			<div>Position</div> 
+			<div>X: -2<input id="inp_objX" type="range"
+			 min="-2" max="2" step="0.05" value="0.05" />2</div> 
+			<div>Y: -2<input id="inp_objY" type="range"
+			 min="-2" max="2" step="0.05" value="0" />2</div>
+			<div>Z: -2<input id="inp_objZ" type="range"
+			 min="-2" max="2" step="0.05" value="0.05" />2</div>
+			
+			<div>Scale: 0<input id="inp_obj_scale" type="range"
+			 min="0" max="2" step="0.05" value="1" />2</div> 
+			
+			<div>Rotation</div> 
+			<div>X: -180<input id="inp_obj_rotationX" type="range"
+			 min="-180" max="180" step="5.0" value="0" />180
+			</div> 
+			<div>Y: -180<input id="inp_obj_rotationY" type="range"
+			 min="-180" max="180" step="5.0" value="0" />180
+			</div> 
+			<div>Z: -180<input id="inp_obj_rotationZ" type="range"
+			 min="-180" max="180" step="10.0" value="0" />180
+			</div> 
+			
+			<div>Speed: -2<input id="inp_speed" type="range"
+			 min="-2" max="2" step="0.1" value="0.5" />2
+			</div> 
+			<br>
+			
+			<div> <strong>---- Color ----</strong> </div
+			<div>
+			R: 0<input id="redSlider" type="range"
+			 min="0" max="1" step="0.05" value="0" />1
+			</div> 
+			<div>
+			G: 0<input id="greenSlider" type="range"
+			 min="0" max="1" step="0.05" value="0" />1
+			</div> 
+			<div>
+			B: 0<input id="blueSlider" type="range"
+			 min="0" max="1" step="0.05" value="0" />1
+			</div>
+			<br>
+		</td>
+	</tr>
+</table>
+<div>
+</body>
+</html>

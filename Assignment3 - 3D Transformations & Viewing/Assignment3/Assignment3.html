@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" >
+<title>Assignment 3 - Windmill</title>
+
+<script id="vertex-shader" type="x-shader/x-vertex">
+attribute vec4 vPosition;
+
+uniform mat4 transformationMatrix;
+uniform mat4 modelView;
+uniform mat4 projection;
+
+void
+main()
+{
+	gl_Position = projection*modelView*transformationMatrix*vec4(vPosition.xyz, 2.5);
+}
+</script>
+
+<script id="fragment-shader" type="x-shader/x-fragment">
+
+precision mediump float;
+uniform vec4 color;
+
+void
+main()
+{
+    gl_FragColor = color;
+}
+</script>
+
+<script type="text/javascript" src="../Common/webgl-utils.js"></script>
+<script type="text/javascript" src="../Common/initShaders.js"></script>
+<script type="text/javascript" src="../Common/MV.js"></script>
+<script type="text/javascript" src="Assignment3.js"></script>
+</head>
+
+<body style="background-color:powderblue;">
+
+<div>
+Feyza
+</div>
+<table>
+	<tr>
+		<td>
+		<canvas id="gl-canvas" width="650" height="650">
+			Oops ... your browser doesn't support the HTML5 canvas element
+		</canvas>
+		</td>
+		<td>
+			<div> <strong>---- Camera related ----</strong> </div><br>
+			
+			<div>FOVY: 30<input id="inp_fovy" type="range"
+			 min="10" max="120" step="0.05" value="30" />120</div> 
+			
+			<div>Camera Position</div> 
+			<div>X: -3<input id="inp_objCamPosX" type="range"
+			 min="-3" max="3" step="0.05" value="0" />3</div> 
+			<div>Y: -3<input id="inp_objCamPosY" type="range"
+			 min="-3" max="3" step="0.05" value="0" />3</div>
+			 <div>Z: 1<input id="inp_objCamPosZ" type="range"
+			 min="1" max="7" step="0.05" value="4" />7</div><br> 
+			 
+			 <div>Camera Target</div> 
+			<div>X: -3<input id="inp_objTargetX" type="range"
+			 min="-3" max="3" step="0.05" value="0" />3</div> 
+			<div>Y: -3<input id="inp_objTargetY" type="range"
+			 min="-3" max="3" step="0.05" value="0" />3</div>
+			 <div>Z: -3<input id="inp_objTargetZ" type="range"
+			 min="-3" max="3" step="0.05" value="0" />3</div><br> 
+			 
+			<div> <strong>---- Transformations ----</strong> </div><br>
+			
+			<div>Position</div> 
+			<div>X: -2<input id="inp_objX" type="range"
+			 min="-2" max="2" step="0.05" value="0.05" />2</div> 
+			<div>Y: -2<input id="inp_objY" type="range"
+			 min="-2" max="2" step="0.05" value="0" />2</div>
+			<div>Z: -2<input id="inp_objZ" type="range"
+			 min="-2" max="2" step="0.05" value="0.05" />2</div><br> 
+			
+			<div>Scale</div> 
+			<div>0<input id="inp_obj_scale" type="range"
+			 min="0" max="2" step="0.05" value="1" />2</div> 
+			<br>
+			
+			<div>Rotation</div> 
+			<div>X: -180<input id="inp_obj_rotationX" type="range"
+			 min="-180" max="180" step="5.0" value="0" />180
+			</div> 
+			<div>Y: -180<input id="inp_obj_rotationY" type="range"
+			 min="-180" max="180" step="5.0" value="0" />180
+			</div> 
+			<div>Z: -180<input id="inp_obj_rotationZ" type="range"
+			 min="-180" max="180" step="10.0" value="0" />180
+			</div> 
+			<br>
+
+			<div>Speed</div> 
+			<div>-2<input id="inp_speed" type="range"
+			 min="-2" max="2" step="0.1" value="0.5" />2
+			</div> 
+			<br>
+			
+			<div> <strong>---- Color ----</strong> </div><br>
+			<div>
+			R: 0<input id="redSlider" type="range"
+			 min="0" max="1" step="0.05" value="0" />1
+			</div> 
+			<div>
+			G: 0<input id="greenSlider" type="range"
+			 min="0" max="1" step="0.05" value="0" />1
+			</div> 
+			<div>
+			B: 0<input id="blueSlider" type="range"
+			 min="0" max="1" step="0.05" value="0" />1
+			</div>
+			<br>
+		</td>
+	</tr>
+</table>
+<div>
+</body>
+</html>
